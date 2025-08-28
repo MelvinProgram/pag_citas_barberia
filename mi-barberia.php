@@ -8,17 +8,17 @@ if(!isset($_SESSION['usuario'])) {
     exit;
 }
 
-$usuario = $_SESSION['usuario'];
-$usuario_id = $_GET['id']; // Obtenido desde navbar
+$usuario_id = $_SESSION['usuario_id'];
+
+// Verificar rol
 $query = $conn->query("SELECT rol FROM usuarios WHERE id=$usuario_id LIMIT 1");
 $rol = $query->fetch_assoc()['rol'];
-
 if($rol !== 'admin') {
     echo "⛔ Acceso denegado.";
     exit;
 }
 
-// Obtener datos de la barbería del admin
+// Obtener datos de la barbería
 $barberia = $conn->query("SELECT * FROM barberias WHERE admin_id=$usuario_id")->fetch_assoc();
 
 // Actualizar datos
@@ -28,16 +28,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     $telefono = $_POST['telefono'];
     $horario = $_POST['horario'];
     $descripcion = $_POST['descripcion'];
+    $lat = $_POST['lat'];
+    $lng = $_POST['lng'];
 
-    $sql = "UPDATE barberias SET nombre='$nombre', direccion='$direccion', telefono='$telefono', 
-            horario='$horario', descripcion='$descripcion' WHERE admin_id=$usuario_id";
+    $sql = "UPDATE barberias SET nombre='$nombre', direccion='$direccion', telefono='$telefono',
+            horario='$horario', descripcion='$descripcion', lat='$lat', lng='$lng' 
+            WHERE admin_id=$usuario_id";
 
     if($conn->query($sql) === TRUE) {
-        echo "<p>✅ Datos actualizados correctamente.</p>";
-        // refrescar datos
+        echo "<p class='alert alert-success'>✅ Datos actualizados correctamente.</p>";
         $barberia = $conn->query("SELECT * FROM barberias WHERE admin_id=$usuario_id")->fetch_assoc();
     } else {
-        echo "Error: " . $conn->error;
+        echo "<p class='alert alert-danger'>Error: " . $conn->error . "</p>";
     }
 }
 ?>
@@ -46,34 +48,54 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Mi Barbería</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Opcional: tus estilos adicionales -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- <link rel="stylesheet" href="css/style.css"> -->
 </head>
 <body>
 <?php include("navbar.php"); ?>
-    <h2>Editar datos de mi barbería</h2>
+
+<div class="container mt-5" style="max-width: 600px;">
+    <h2 class="mb-4 text-center">Editar datos de mi barbería</h2>
     <form method="POST">
-        <label>Nombre Barbería:</label><br>
-        <input type="text" name="nombre" value="<?= $barberia['nombre'] ?>" required><br><br>
+        <div class="mb-3">
+            <label class="form-label">Nombre Barbería:</label>
+            <input type="text" class="form-control" name="nombre" value="<?= htmlspecialchars($barberia['nombre']) ?>" required>
+        </div>
 
-        <label>Dirección:</label><br>
-        <input type="text" name="direccion" value="<?= $barberia['direccion'] ?>"><br><br>
+        <div class="mb-3">
+            <label class="form-label">Dirección:</label>
+            <input type="text" id="direccion" class="form-control" name="direccion" value="<?= htmlspecialchars($barberia['direccion']) ?>" required>
+        </div>
 
-        <label>Teléfono:</label><br>
-        <input type="text" name="telefono" value="<?= $barberia['telefono'] ?>"><br><br>
+        <div class="mb-3">
+            <label class="form-label">Teléfono:</label>
+            <input type="text" class="form-control" name="telefono" value="<?= htmlspecialchars($barberia['telefono']) ?>">
+        </div>
 
-        <label>Horario:</label><br>
-        <input type="text" name="horario" value="<?= $barberia['horario'] ?>"><br><br>
+        <div class="mb-3">
+            <label class="form-label">Horario:</label>
+            <input type="text" class="form-control" name="horario" value="<?= htmlspecialchars($barberia['horario']) ?>">
+        </div>
 
-        <label>Descripción:</label><br>
-        <textarea name="descripcion"><?= $barberia['descripcion'] ?></textarea><br><br>
+        <div class="mb-3">
+            <label class="form-label">Descripción:</label>
+            <textarea class="form-control" name="descripcion" rows="4"><?= htmlspecialchars($barberia['descripcion']) ?></textarea>
+        </div>
 
-        <button type="submit" class="btn">Actualizar barbería</button>
+        <!-- Coordenadas ocultas -->
+        <input type="hidden" name="lat" id="lat" value="<?= $barberia['lat'] ?>">
+        <input type="hidden" name="lng" id="lng" value="<?= $barberia['lng'] ?>">
+
+        <!-- Mapa para editar ubicación -->
+        <div id="map-edit" style="height: 300px;" class="mb-3"></div>
+
+        <button type="submit" class="btn btn-primary mb-5 w-100">Actualizar barbería</button>
     </form>
+</div>
 
-    <!-- JS bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/editar-barberia.js"></script>
 </body>
 </html>

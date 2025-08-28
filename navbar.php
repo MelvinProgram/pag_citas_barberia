@@ -9,6 +9,9 @@ $rol = null;
 $usuario_id = null;
 $nombre_barberia = null;
 
+// Detectar página actual
+$current_page = basename($_SERVER['PHP_SELF']);
+
 if (isset($_SESSION['usuario'])) {
     $usuario = $_SESSION['usuario'];
     $query = $conn->query("SELECT id, rol FROM usuarios WHERE nombre='$usuario' LIMIT 1");
@@ -27,31 +30,56 @@ if (isset($_SESSION['usuario'])) {
     }
 }
 ?>
-<nav class="navbar">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
   <div class="container">
-    <a href="index.php" class="logo">Barber Flow citas</a>
-    <ul class="menu">
-      <li><a href="index.php">Inicio</a></li>
+    <a class="navbar-brand fw-bold" href="index.php">Barber Flow citas</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" 
+            aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-      <?php if(!$rol): ?>
-        <!-- Visitante -->
-        <li><a href="login.php">Iniciar Sesión</a></li>
-        <li><a href="registro.php">Registro Usuario</a></li>
-        <li><a href="registro-admin.php">Registro Admin</a></li>
+    <div class="collapse navbar-collapse" id="navbarMenu">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link <?= $current_page === 'index.php' ? 'active' : '' ?>" href="index.php">Inicio</a>
+        </li>
 
-      <?php elseif($rol === 'usuario'): ?>
-        <!-- Usuario normal -->
-        <li><a href="mis-citas.php">Mis Citas</a></li>
-        <li><a href="logout.php">Cerrar Sesión</a></li>
+        <?php if(!$rol): ?>
+          <!-- Visitante -->
+          <li class="nav-item">
+            <a class="nav-link <?= $current_page === 'login.php' ? 'active' : '' ?>" href="login.php">Iniciar Sesión</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <?= $current_page === 'registro.php' ? 'active' : '' ?>" href="registro.php">Registro Usuario</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <?= $current_page === 'registro-admin.php' ? 'active' : '' ?>" href="registro-admin.php">Registro de Barbería</a>
+          </li>
 
-      <?php elseif($rol === 'admin'): ?>
-        <!-- Administrador -->
-        <li><a href="admin-citas.php">Panel Admin</a></li>
-        <li><a href="mi-barberia.php?id=<?= $usuario_id ?>">
-            <?= $nombre_barberia ? $nombre_barberia : "Mi Barbería" ?>
-        </a></li>
-        <li><a href="logout.php">Cerrar Sesión</a></li>
-      <?php endif; ?>
-    </ul>
+        <?php elseif($rol === 'usuario'): ?>
+          <!-- Usuario normal -->
+          <li class="nav-item">
+            <a class="nav-link <?= $current_page === 'mis-citas.php' ? 'active' : '' ?>" href="mis-citas.php">Mis Citas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="logout.php">Cerrar Sesión</a>
+          </li>
+
+        <?php elseif($rol === 'admin'): ?>
+          <!-- Administrador -->
+          <li class="nav-item">
+            <a class="nav-link <?= $current_page === 'admin-citas.php' ? 'active' : '' ?>" href="admin-citas.php">Panel Admin</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <?= $current_page === 'mi-barberia.php' ? 'active' : '' ?>" href="mi-barberia.php?id=<?= $usuario_id ?>">
+              <?= $nombre_barberia ? $nombre_barberia : "Mi Barbería" ?>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="logout.php">Cerrar Sesión</a>
+          </li>
+        <?php endif; ?>
+      </ul>
+    </div>
   </div>
 </nav>

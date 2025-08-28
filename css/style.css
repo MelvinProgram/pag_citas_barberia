@@ -1,8 +1,15 @@
 
+*{
+  box-sizing: border-box;
+  margin: 0%;
+  padding: 0%;
+}
+
 body {
   font-family: Arial, sans-serif;
-  margin: 20px;
-  background: #f4f4f4;
+  margin: 0px;
+  background: #dedede;
+  padding: 0px;
 }
 
 header {
@@ -14,7 +21,7 @@ header {
 header h1{
   font-size: 5rem;
   text-align: center;
-  /* background-color: #28a745; */
+  background-color: #28a745;
 }
 
 header a {
@@ -55,13 +62,14 @@ header a {
 /* *************--- NAVBAR ---************* */
 /* ***************************************  */
 
-.navbar {
-  background: #333;
+ .navbar {
+  /* background: #b50404; */
   padding: 12px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 
 .navbar .logo {
   color: #fff;
@@ -76,7 +84,7 @@ header a {
   gap: 15px;
   margin: 0;
   padding: 10px 0 10px;
-  /* background: #28a745; */
+  background: #28a745;
 }
 
 .navbar .menu li {
@@ -84,7 +92,7 @@ header a {
 }
 
 .navbar .menu a {
-  /* color: #fff; */
+  color: #fff;
   text-decoration: none;
   padding: 6px 10px;
   margin-left: 10px;
